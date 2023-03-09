@@ -1,0 +1,28 @@
+1. Create a stack of cards.
+	{
+		The stack will be an array of 52 cards.
+		Each card will be a string with the value and suit.
+		for(let i = 0; i < 52; i++)
+		{
+			let value = i % 13 + 1;
+			let suit = i % 4;
+			let card = value + suit;
+			stack.push(card);
+		}
+	}
+
+2. Draw 2 cards for the dealer (one face up, one face down) and 2 cards for the player (both face up).
+3. The player goes first. The player can choose to hit (draw another card) or stand (keep the cards they have).
+4. If the player goes over 21, they bust and lose.
+5. If the player stands, the dealer draws cards until they have 17 or more.
+
+6. Game states:
+	{
+		1. Player busts
+		2. Dealer busts
+		3. Player has 21
+		4. Dealer has 21
+		5. Player has more than dealer
+		6. Dealer has more than player
+		7. Player and dealer have the same amount
+	}

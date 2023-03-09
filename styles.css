@@ -1,0 +1,28 @@
+nav.ui-bar {
+	border-width: 2px;
+	border-color: black;
+	border-style: ridge;
+	padding: 15px;
+	position: absolute;
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	flex-flow: row wrap;
+	bottom: 5px;
+}
+
+/* 
+button.game-ui {
+	background-color: black;
+	color: white;
+	padding: 15px;
+	margin-inline: 15px;
+	font-weight: bold;
+} */
+button.game-ui {
+	/* background-color: black; */
+	/* color: white; */
+	padding: 15px;
+	margin-inline: 15px;
+	font-weight: bold;
+}
