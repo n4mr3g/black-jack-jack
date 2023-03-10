@@ -6,15 +6,25 @@
 		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
-		<div id="banner">Blackjack!</div>
-		<div id="dealer-cards" class="card-field"></div>
-		<div id="player-cards" class="card-field"></div>
-		<div id="dealer-points" class="points"></div>
-		<div id="player-points" class="points"></div>
+		<div id="banner">Black Jack Jack</div>
+		<div id="playfield">
+			<div class="card-field">
+				<div id="dealer-cards"></div>
+				<div id="player-cards"></div>
+			</div>
+			<div id="points">
+				<div id="dealer-points"></div>
+				<div id="player-points"></div>
+			</div>
+		</div>
+		<div id="message">Click "Deal" to start playing!</div>
 		<nav class="ui-bar">
 			<button class="game-ui" id="hit">Hit</button>
 			<button class="game-ui" id="stand">Stand</button>
 			<button class="game-ui" id="deal">Deal</button>
+			<div class="game-ui" id="wins">Wins: 0</div>
+			<div class="game-ui" id="losses">Losses: 0</div>
+			<div class="game-ui" id="draws">Draws: 0</div>
 		</nav>
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 		<script src="script.js"></script>
