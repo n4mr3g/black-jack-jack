@@ -118,6 +118,9 @@ class CardStack extends Array {
 const deck = new Deck;
 const playerCards = new CardStack;
 const dealerCards = new CardStack;
+var	wins = 0;
+var losses = 0;
+var draws = 0;
 
 // Elements
 const dealButton = document.getElementById("deal");
@@ -127,6 +130,10 @@ const dealerCardsField = document.getElementById("dealer-cards");
 const playerCardsField = document.getElementById("player-cards");
 const playerPoints = document.getElementById("player-points");
 const dealerPoints = document.getElementById("dealer-points");
+const message = document.getElementById("message");
+const winsEl = document.getElementById("wins");
+const lossesEl = document.getElementById("losses");
+const drawsEl = document.getElementById("draws");
 
 function dealCard(cardField, deck, faceDown = false) {
 	if (deck.length === 0) {
@@ -155,11 +162,12 @@ function dealCard(cardField, deck, faceDown = false) {
 	cardField.appendChild(cardImage);
 }
 
-gameInit();
+gameInit("Click <em>Deal</em> to start playing!");
 
 // Events
 
 const onDealClick = function() {
+	message.innerText = "";
 	deck.populateCards();
 	playerCards.reset();
 	dealerCards.reset();
@@ -175,7 +183,9 @@ const onDealClick = function() {
 	if (playerCards.some(isTen) && playerCards.some(isAce))
 	{
 		console.log("Blackjack!");
-		gameInit();
+		gameInit("You got Blackjack! Click <em>Deal</em> to play again.");
+		wins++;
+		winsEl.innerText = "Wins: " + wins;
 		return "win";
 	}
 }
@@ -197,7 +207,9 @@ const isAce = (card) => card.value === 1;
 function playersTurn() {
 	if (playerCards.totalPoints > 21) {
 		console.log("Player bust!");
-		gameInit();
+		gameInit("Player bust! Click <em>Deal</em> to play again.");
+		losses++;
+		lossesEl.innerText = "Losses: " + losses;
 		return "lost";
 	}
 	if (playerCards.totalPoints === 21){
@@ -219,15 +231,21 @@ function dealersTurn() {
 			}
 			if (playerCards.totalPoints > dealerCards.totalPoints || dealerCards.totalPoints > 21) {
 				console.log("Player wins!");
-				gameInit();
+				gameInit("You won! Click <em>Deal</em> to play again.");
+				wins++;
+				winsEl.innerText = "Wins: " + wins;
 				return "win";
 			} else if(playerCards.totalPoints === dealerCards.totalPoints) {
 				console.log("Push");
-				gameInit();
+				gameInit("Push! Click <em>Deal</em> to play again.");
+				draws++;
+				drawsEl.innerText = "Draws: " + draws;
 				return "push";
 			} else if (playerCards.totalPoints < dealerCards.totalPoints) {
-				console.log("Player lost!");
-				gameInit();
+				console.log("You lost! Click <em>Deal</em> to play again.");
+				gameInit("You lost! Click <em>Deal</em> to play again.");
+				losses++;
+				lossesEl.innerText = "Losses: " + losses;
 				return "lose";
 		}
 }
@@ -238,10 +256,11 @@ standButton.addEventListener("click", onStandClick);
 
 
 // Game initialization
-function gameInit() {
+function gameInit(msg) {
 	hitButton.disabled = true;
 	standButton.disabled = true;
 	dealButton.disabled = false;
+	message.innerHTML = msg;
 }
 
 // Debugging below
