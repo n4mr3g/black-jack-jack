@@ -7,6 +7,15 @@ class Card {
 	constructor(value, suit, isFaceDown = false) {
 		this._value = value;
 		this._suit = suit;
+		this._isFaceDown = isFaceDown;
+	}
+
+	set isFaceDown(faceDown) {
+		this._isFaceDown = faceDown;
+	}
+	
+	get isFaceDown() {
+		return this._isFaceDown;
 	}
 
 	get value() {
@@ -84,12 +93,14 @@ class CardStack extends Array {
 		let points = 0;
 		let aces = 0;
 		for (let i = 0; i < this.length; i++) {
-			if (this[i].value >= 10) {
-				points += 10;
-			} else if (this[i].value === 1) {
-				aces++;
-			} else {
-				points += this[i].value;
+			if (this[i].isFaceDown === false) {
+				if (this[i].value >= 10) {
+					points += 10;
+				} else if (this[i].value === 1) {
+					aces++;
+				} else {
+					points += this[i].value;
+				}
 			}
 		}
 		while (aces--) {
@@ -114,6 +125,8 @@ const hitButton = document.getElementById("hit");
 const standButton = document.getElementById("stand");
 const dealerCardsField = document.getElementById("dealer-cards");
 const playerCardsField = document.getElementById("player-cards");
+const playerPoints = document.getElementById("player-points");
+const dealerPoints = document.getElementById("dealer-points");
 
 function dealCard(cardField, deck, faceDown = false) {
 	if (deck.length === 0) {
@@ -126,14 +139,17 @@ function dealCard(cardField, deck, faceDown = false) {
 	if (cardField === dealerCardsField)
 	{
 		if (faceDown) {
+			card.isFaceDown = true;
 			cardImage.src = cardsDirectory + "Card_back_01.svg";
 		} else {
 			cardImage.src = card.cardImage;
 		}
 		dealerCards.push(card);
+		dealerPoints.innerText = "Dealer: " + dealerCards.totalPoints;
 	} else {
 		cardImage.src = card.cardImage;
 		playerCards.push(card);
+		playerPoints.innerText = "Player: " + playerCards.totalPoints;
 	}
 	cardImage.className = "card";
 	cardField.appendChild(cardImage);
@@ -162,6 +178,10 @@ const onDealClick = function() {
 		gameInit();
 		return "win";
 	}
+}
+
+const onStandClick = function() {
+	dealersTurn();
 }
 
 const onHitClick = function() {
@@ -210,11 +230,6 @@ function dealersTurn() {
 				gameInit();
 				return "lose";
 		}
-}
-
-const onStandClick = function() {
-		dealersTurn();
-
 }
 
 dealButton.addEventListener("click", onDealClick);
