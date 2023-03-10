@@ -26,3 +26,25 @@ button.game-ui {
 	margin-inline: 15px;
 	font-weight: bold;
 }
+
+.card {
+	width: 10%;
+	display: inline-block;
+	padding: 5px;
+	margin: 5px;
+	border: 1px solid black;
+	
+}
+
+div.card-field {
+	display: flex;
+	justify-content: left;
+	/* align-items: flex-start; */
+	margin: 1px;
+	padding: 1px;
+	gap: 10px;
+}
+
+div.child-element {
+	margin: 5px;
+}
