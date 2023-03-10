@@ -1,3 +1,7 @@
+body {
+	background-color: green;
+}
+
 nav.ui-bar {
 	border-width: 2px;
 	border-color: black;
@@ -7,8 +11,14 @@ nav.ui-bar {
 	display: flex;
 	align-items: center;
 	justify-content: space-around;
-	flex-flow: row wrap;
 	bottom: 5px;
+}
+
+div#banner {
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
+	text-align: center;
+	font-size: x-large;
+	font-weight: bold;
 }
 
 /* 
@@ -32,7 +42,6 @@ button.game-ui {
 	display: inline-block;
 	padding: 5px;
 	margin: 5px;
-	border: 1px solid black;
 	
 }
 
@@ -45,6 +54,8 @@ div.card-field {
 	gap: 10px;
 }
 
-div.child-element {
-	margin: 5px;
+div.points {
+	font-size: larger;
+	font-weight: bold;
+	font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
