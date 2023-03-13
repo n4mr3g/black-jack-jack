@@ -1,6 +1,3 @@
-// Path to the card images
-const cardsDirectory = "./SVG-cards-1.3/";
-
 // Class "Card" with static method "cardToFilename(value, suit)" and getter for the property "fileName".
 // "get fileName" returns the complete filename (without the path), including extension, of the image of the card that calls it.
 class Card {
@@ -8,10 +5,18 @@ class Card {
 		this._value = value;
 		this._suit = suit;
 		this._isFaceDown = isFaceDown;
+		this._cardStack = null;
 	}
 
 	set isFaceDown(faceDown) {
 		this._isFaceDown = faceDown;
+		if (!faceDown && this.cardStack !== undefined){
+			this.cardStack.updatePoints();
+		}
+	}
+
+	set cardStack(stack) {
+		this._cardStack = stack;
 	}
 	
 	get isFaceDown() {
@@ -27,7 +32,7 @@ class Card {
 	}
 
 	get cardImage() {
-		let name = cardsDirectory + this._value;
+		let name = cardsPath + this._value;
 		switch (this._suit) {
 			case 1:
 				name += "_of_clubs.svg";
@@ -79,42 +84,88 @@ class Deck extends Array {
 class CardStack extends Array {
 	constructor() {
 		super();
-		this._totalPoints = 0;
+		this._points = 0;
+		this._softPoints = 0;
+		this._hardPoints = 0;
+		this._printablePoints = "";
 		this._aces = 0;
+	}
+
+	push(...cards) {
+		for (let i = 0; i < cards.length; i++) {
+			cards[i].cardStack = this;
+			if (cards[i].isFaceDown) {continue;}
+			if (cards[i].value === 1) {
+				this._aces++;
+			}
+			
+		}
+		super.push(...cards);
+		this.updatePoints();
 	}
 
 	reset() {
+		this._points = 0;
+		this._softPoints = 0;
+		this._hardPoints = 0;
+		this._printablePoints = "";
 		this._aces = 0;
-		this._totalPoints = 0;
 		this.length = 0;
 	}
 
-	get totalPoints() {
-		let points = 0;
-		let aces = 0;
-		for (let i = 0; i < this.length; i++) {
-			if (this[i].isFaceDown === false) {
-				if (this[i].value >= 10) {
-					points += 10;
-				} else if (this[i].value === 1) {
-					aces++;
-				} else {
-					points += this[i].value;
-				}
-			}
+
+	get printablePoints() {
+		this.updatePoints();
+		let hard = this._hardPoints;
+		let soft = this._softPoints;
+		if (this._aces === 1 && hard < 11) {
+			this._printablePoints = `${hard} / ${soft}`;
 		}
-		while (aces--) {
-			if (points + 11 > 21) {
-				points += 1;
-			} else {
-				points += 11;
-			}
+		else {
+			this._printablePoints = hard.toString();
 		}
-		return points;
+		return this._printablePoints;
+
 	}
+
+	updatePoints() {
+		let points = 0;
+		let hardPoints = 0;
+		
+		for (let i = 0; i < this.length; i++) {
+			if (this[i].isFaceDown || this[i].value === 1) {continue;}
+			let value = this[i].value >= 10 ? 10 : this[i].value;
+			hardPoints += value;
+		}
+		console.log("Hard points: " + hardPoints);
+		let softPoints = hardPoints;
+		for (let i = 0; i < this._aces; i++) {
+			if (hardPoints + 11 < 21) {
+				softPoints += 11;
+			} else {
+				softPoints += 1;
+			}
+			hardPoints += 1;
+		}
+		this._softPoints = softPoints;
+		this._hardPoints = hardPoints;
+	  }
+
+	get points() {
+		this.updatePoints();
+		let hard = this._hardPoints;
+		let soft = this._softPoints;
+		if (soft > hard && soft <= 21) {
+			this._points = soft;
+		} else {
+			this._points = hard
+		}
+		return this._points;
+	  }
 }
 
 // Global variables
+const cardsPath = "./SVG-cards-1.3/";
 const deck = new Deck;
 const playerCards = new CardStack;
 const dealerCards = new CardStack;
@@ -122,72 +173,64 @@ var	wins = 0;
 var losses = 0;
 var draws = 0;
 
-// Elements
-const dealButton = document.getElementById("deal");
-const hitButton = document.getElementById("hit");
-const standButton = document.getElementById("stand");
-const dealerCardsField = document.getElementById("dealer-cards");
-const playerCardsField = document.getElementById("player-cards");
-const playerPoints = document.getElementById("player-points");
-const dealerPoints = document.getElementById("dealer-points");
-const message = document.getElementById("message");
-const winsEl = document.getElementById("wins");
-const lossesEl = document.getElementById("losses");
-const drawsEl = document.getElementById("draws");
-
-function dealCard(cardField, deck, faceDown = false) {
-	if (deck.length === 0) {
-		console.log("Woops, out of cards!");
-		return;
-	}
-	var card, cardImage;
-	cardImage = document.createElement("img");
-	card = deck.getCard();
-	if (cardField === dealerCardsField)
+function dealCard(receiver, deck, faceDown = false) {
+	var $img = $("<img>");
+	var card = deck.getCard();
+	if (receiver === "dealer")
 	{
 		if (faceDown) {
 			card.isFaceDown = true;
-			cardImage.src = cardsDirectory + "Card_back_01.svg";
+			$img.attr("src", `${cardsPath}Card_back_01.svg`);
 		} else {
-			cardImage.src = card.cardImage;
+			$img.attr("src", card.cardImage);
 		}
 		dealerCards.push(card);
-		dealerPoints.innerText = "Dealer: " + dealerCards.totalPoints;
+		$("#dealer-points").text(`Dealer: ${dealerCards.printablePoints}`);
 	} else {
-		cardImage.src = card.cardImage;
+		$img.attr("src", card.cardImage);
 		playerCards.push(card);
-		playerPoints.innerText = "Player: " + playerCards.totalPoints;
+		$("#player-points").text(`Player: ${playerCards.printablePoints}`);
 	}
-	cardImage.className = "card";
-	cardField.appendChild(cardImage);
+	$img.addClass("card");
+	$img.appendTo($(`#${receiver}-cards`));
 }
 
-gameInit("Click <em>Deal</em> to start playing!");
 
 // Events
 
+$(document).on('keydown', function(event) {
+	if (event.which === 81) { // Q key
+        if ($('#hit-button').is(':enabled')) {
+            onHitClick();
+        }
+    }
+    else if (event.which === 87) { // W key
+        if ($('#stand-button').is(':enabled')) {
+            onStandClick();
+        }
+    }
+    else if (event.which === 69) { // E key
+        if ($('#deal-button').is(':enabled')) {
+            onDealClick();
+        }
+    }
+});
+
 const onDealClick = function() {
-	message.innerText = "";
 	deck.populateCards();
 	playerCards.reset();
 	dealerCards.reset();
-	playerCardsField.innerHTML = "";
-	dealerCardsField.innerHTML = "";
-	standButton.disabled = false;
-	hitButton.disabled = false;
-	dealButton.disabled = true;
-	dealCard(playerCardsField, deck);
-	dealCard(dealerCardsField, deck, true);
-	dealCard(playerCardsField, deck);
-	dealCard(dealerCardsField, deck);
-	if (playerCards.some(isTen) && playerCards.some(isAce))
-	{
-		console.log("Blackjack!");
-		gameInit("You got Blackjack! Click <em>Deal</em> to play again.");
-		wins++;
-		winsEl.innerText = "Wins: " + wins;
-		return "win";
-	}
+	$("#message").html("");
+	$("#player-cards").html("");
+	$("#dealer-cards").html("");
+	$("#stand-button").attr("disabled", false);
+	$("#hit-button").attr("disabled", false);
+	$("#deal-button").attr("disabled", true);
+	dealCard("player", deck);
+	dealCard("dealer", deck, true);
+	dealCard("player", deck);
+	dealCard("dealer", deck);
+	checkForBlackjack();
 }
 
 const onStandClick = function() {
@@ -195,78 +238,97 @@ const onStandClick = function() {
 }
 
 const onHitClick = function() {
-	dealCard(playerCardsField, deck);
+	dealCard("player", deck);
 	playersTurn();
 }
 
-// Blackjack check functions (if the player is dealt an ace and a 10/K/Q/J as the first hand, the player wins with Blackjack)
+$("#deal-button").bind("click", onDealClick);
+$("#hit-button").bind("click", onHitClick);
+$("#stand-button").bind("click", onStandClick);
+
+// Blackjack check functions
+
 const isTen = (card) => card.value >= 10;
 const isAce = (card) => card.value === 1;
 
+function checkForBlackjack(){
+	let playerBj = playerCards.some(isTen) && playerCards.some(isAce);
+	let dealerBj = dealerCards.some(isTen) && dealerCards.some(isAce);
+	if (playerBj && dealerBj) {
+		gameOver("draw", "Push! Click <em>Deal</em> to play again.");
+		$("#player-points").html(`Player: <em>Blackjack!</em>`);
+		flipDealersFirstCard("<em>Blackjack!</em>");
+	} else if (dealerBj) {
+		console.log("Dealer has blackjack");
+		gameOver("loss", "Dealer has blackjack. Click <em>Deal</em> to play again.");
+		flipDealersFirstCard("<em>Blackjack!</em>");
+	} else if (playerBj) {
+		console.log("<em>Blackjack!</em>");
+		flipDealersFirstCard();
+		gameOver("win", "You got Blackjack! Click <em>Deal</em> to play again.");
+		$("#player-points").html(`Player: <em>Blackjack!</em>`);
+	}
+}
+
+// Auxiliary functions
+
+function flipDealersFirstCard(pts = undefined) {
+		$("#dealer-cards").children(":first-child").attr('src', dealerCards[0].cardImage);
+		dealerCards[0].isFaceDown = false;
+		if (pts === undefined) {pts = dealerCards.printablePoints}
+		$("#dealer-points").html(`Dealer: ${pts}`);
+}
+
+function updateScores() {
+	$("#losses").html(`Losses:<br><br> ${losses}`);
+	$("#wins").html(`Wins:<br><br> ${wins}`);
+	$("#draws").html(`Draws:<br><br> ${draws}`);
+}
+
+// Game initialization
+
+function gameOver(result = undefined, msg) {
+	if (result == "win") {wins++;}
+	else if (result == "loss") {losses++;}
+	else if (result == "draw") {draws++;}
+	updateScores();
+	$("#hit-button").attr("disabled", true);
+	$("#stand-button").attr("disabled", true);
+	$("#deal-button").attr("disabled", false);
+	$("#message").html(msg);
+}
+
+// Game flow functions
 
 function playersTurn() {
-	if (playerCards.totalPoints > 21) {
+	if (playerCards.points > 21) {
 		console.log("Player bust!");
-		gameInit("Player bust! Click <em>Deal</em> to play again.");
-		losses++;
-		lossesEl.innerText = "Losses: " + losses;
-		return "lost";
+		flipDealersFirstCard();
+		gameOver("loss", "Player bust! Click <em>Deal</em> to play again.");
 	}
-	if (playerCards.totalPoints === 21){
+	else if (playerCards.points === 21){
 		dealersTurn();
-		return;
 	}
 }
 
 function dealersTurn() {
-			//disable buttons
-			standButton.disabled = true;
-			hitButton.disabled = true;
-			//turn card face up
-			dealerCardsField.firstChild.src = dealerCards[0].cardImage;
-			//check for blackjack
-			//if no blackjack, AI starts dealing cards
-			while (dealerCards.totalPoints < 17) {
-				dealCard(dealerCardsField, deck);
+			$("#stand-button").attr("disabled", true);
+			$("#hit-button").attr("disabled", true);
+			flipDealersFirstCard();
+			while (dealerCards.points < 17) {
+				dealCard("dealer", deck);
 			}
-			if (playerCards.totalPoints > dealerCards.totalPoints || dealerCards.totalPoints > 21) {
-				console.log("Player wins!");
-				gameInit("You won! Click <em>Deal</em> to play again.");
-				wins++;
-				winsEl.innerText = "Wins: " + wins;
-				return "win";
-			} else if(playerCards.totalPoints === dealerCards.totalPoints) {
-				console.log("Push");
-				gameInit("Push! Click <em>Deal</em> to play again.");
-				draws++;
-				drawsEl.innerText = "Draws: " + draws;
-				return "push";
-			} else if (playerCards.totalPoints < dealerCards.totalPoints) {
-				console.log("You lost! Click <em>Deal</em> to play again.");
-				gameInit("You lost! Click <em>Deal</em> to play again.");
-				losses++;
-				lossesEl.innerText = "Losses: " + losses;
-				return "lose";
-		}
+			if (playerCards.points > dealerCards.points || dealerCards.points > 21) {
+				if (dealerCards.points > 21) {
+					gameOver("win", "Dealer bust. You won! Click <em>Deal</em> to play again.");
+				} else {
+					gameOver("win", "You won! Click <em>Deal</em> to play again.");
+				}
+			} else if(playerCards.points === dealerCards.points) {
+				gameOver("draw", "Push! Click <em>Deal</em> to play again.");
+			} else if (playerCards.points < dealerCards.points) {
+				gameOver("loss", "You lost! Click <em>Deal</em> to play again.");
+			}
 }
 
-dealButton.addEventListener("click", onDealClick);
-hitButton.addEventListener("click", onHitClick);
-standButton.addEventListener("click", onStandClick);
-
-
-// Game initialization
-function gameInit(msg) {
-	hitButton.disabled = true;
-	standButton.disabled = true;
-	dealButton.disabled = false;
-	message.innerHTML = msg;
-}
-
-// Debugging below
-
-/* for (let i = 0; i < cards.length; i++) {
-	console.log(cards[i].fileName);
-} */
-
-// console.log(cardToFilename(cards[0]));
+gameOver("Click <em>Deal</em> to start playing!");
