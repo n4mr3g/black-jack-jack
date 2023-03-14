@@ -88,11 +88,11 @@ class CardHand extends Array {
 		this.updatePoints();
 		let hard = this._hardPoints;
 		let soft = this._softPoints;
-		if (hard < 11 && soft < 21 && hard !== soft) {
+		if (hard < 11 && soft <= 21 && hard !== soft) {
 			this._printablePoints = `${hard} / ${soft}`;
 		}
 		else {
-			this._printablePoints = hard.toString();
+			this._printablePoints = soft === 21 ? "21" : hard.toString();
 		}
 		return this._printablePoints;
 
