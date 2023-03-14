@@ -3,3 +3,4 @@
 - Add animations
 - Add sound effects
 - Load all images at the start of the game to improve performance
+- Improve CSS
