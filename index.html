@@ -6,18 +6,18 @@
 		<link rel="stylesheet" href="styles.css">
 	</head>
 	<body>
-		<div id="banner">Black Jack Jack</div>
+		<div id="message">Click <em>Deal</em> to start playing!</div>
 		<div id="playfield">
 			<div id="card-field">
 				<div id="dealer-cards"></div>
+				<div class="points">
+					<div id="dealer-points"></div>
+				</div>
 				<div id="player-cards"></div>
+				<div class="points">
+					<div id="player-points"></div>
+				</div>
 			</div>
-		</div>
-		<div id="points">
-			<div id="dealer-points"></div>
-			<div id="player-points"></div>
-		</div>
-		<div id="message">Click <em>Deal</em> to start playing!</div>
 		<div id="ui">
 			<button id="hit-button" disabled="true">Hit (Q)</button>
 			<button id="stand-button" disabled="true">Stand (W)</button>
@@ -29,5 +29,4 @@
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.3/jquery.min.js"></script>
 		<script src="script.js"></script>
 	</body>
-	
 </html>
