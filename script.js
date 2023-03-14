@@ -69,6 +69,12 @@ class CardHand extends Array {
 		this._softPoints = 0;
 		this._hardPoints = 0;
 		this._printablePoints = "";
+		this._hasBj = false;
+	}
+
+	get hasBj() {
+		this.updatePoints();
+		return this._hasBj;
 	}
 
 	push(...cards) {
@@ -81,11 +87,15 @@ class CardHand extends Array {
 		this._softPoints = 0;
 		this._hardPoints = 0;
 		this._printablePoints = "";
+		this._hasBj = false;
 		this.length = 0;
 	}
 
 	get printablePoints() {
-		this.updatePoints();
+		if (this.hasBj) {
+			this._printablePoints = "<em>Blackjack!</em>"
+			return this._printablePoints;
+		}
 		let hard = this._hardPoints;
 		let soft = this._softPoints;
 		if (hard < 11 && soft <= 21 && hard !== soft) {
@@ -99,6 +109,12 @@ class CardHand extends Array {
 	}
 
 	updatePoints() {
+		if (this.length === 2 && this.some(isTen) && this.some(isAce))
+		{
+			this._printablePoints = "<em>Blackjack!</em>";
+			this._hasBj = true;
+			return;
+		}
 		let hardPoints = 0;
 		let aces = 0;
 		for (let i = 0; i < this.length; i++) {
@@ -164,7 +180,8 @@ const onDealClick = function() {
 	deck.populateCards();
 	playerHand.reset();
 	dealerHand.reset();
-	$("#message").html("");
+	$("#message").html("Player's turn");
+	$("#message").css("background-color", "white");
 	$("#player-cards").html("");
 	$("#dealer-cards").html("");
 	$("#stand-button").attr("disabled", false);
@@ -193,11 +210,10 @@ $("#stand-button").bind("click", onStandClick);
 
 // Auxiliary functions
 
-function flipDealersFirstCard(pts = undefined) {
+function flipDealersFirstCard() {
 		$("#dealer-cards").children(":first-child").attr('src', dealerHand[0].cardImage);
 		dealerHand[0].isFaceDown = false;
-		if (pts === undefined) {pts = dealerHand.printablePoints}
-		$("#dealer-points").html(`Dealer: ${pts}`);
+		$("#dealer-points").html(`Dealer: ${dealerHand.printablePoints}`);
 }
 
 
@@ -207,14 +223,14 @@ const isTen = (card) => card.value >= 10;
 const isAce = (card) => card.value === 1;
 
 function checkForBlackjack(){
-	let playerBj = playerHand.some(isTen) && playerHand.some(isAce);
-	let dealerBj = dealerHand.some(isTen) && dealerHand.some(isAce);
+	let playerBj = playerHand.hasBj;
+	let dealerBj = dealerHand.hasBj;
 	if (playerBj && dealerBj) {
-		flipDealersFirstCard("<em>Blackjack!</em>");
+		flipDealersFirstCard();
 		$("#player-points").html(`Player: <em>Blackjack!</em>`);
 		gameOver("draw", "Push! Click <em>Deal</em> to play again.");
 	} else if (dealerBj) {
-		flipDealersFirstCard("<em>Blackjack!</em>");
+		flipDealersFirstCard();
 		gameOver("loss", "Dealer has blackjack. Click <em>Deal</em> to play again.");
 	} else if (playerBj) {
 		flipDealersFirstCard();
@@ -226,15 +242,18 @@ function checkForBlackjack(){
 
 // Game initialization
 
-function gameOver(result = undefined, msg) {
+function gameOver(result, msg) {
 	if (result == "win") {
 		$("#wins").html(`Wins:<br><br> ${++wins}`);
+		$("#message").css("background-color", "rgb(5, 250, 5)");
 	}
 	else if (result == "loss") {
 		$("#losses").html(`Losses:<br><br> ${++losses}`);
+		$("#message").css("background-color", "red");
 	}
 	else if (result == "draw") {
 		$("#draws").html(`Draws:<br><br> ${++draws}`)
+		$("#message").css("background-color", "yellow");
 	}
 	$("#hit-button").attr("disabled", true);
 	$("#stand-button").attr("disabled", true);
