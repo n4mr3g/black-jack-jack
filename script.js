@@ -293,4 +293,7 @@ function dealersTurn() {
 			} else if (playerHand.points < dealerHand.points) {
 				gameOver("loss", "You lost! Click <em>Deal</em> to play again.");
 			}
+<<<<<<< HEAD
+}
+=======
 }
