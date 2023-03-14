@@ -1,5 +1,5 @@
 // Class "Card" with static method "cardToFilename(value, suit)" and getter for the property "fileName".
-// "get fileName" returns the complete filename (without the path), including extension, of the image of the card that calls it.
+// "get cardImage" returns the complete filename (without the path), including extension, of the image of the card that calls it.
 class Card {
 	constructor(value, suit, isFaceDown = false) {
 		this._value = value;
