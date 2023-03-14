@@ -1,12 +1,9 @@
 * {
 	box-sizing: border-box;
-	/* border:2px;
-	border-color: red;
-	border-style: solid; */
 }
 
 body {
-	background-color: green;
+	background-color: rgb(3, 121, 3);
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 	text-align: center;
 }
@@ -17,10 +14,8 @@ body {
 	transform: translateX(-50%);
 	border-width: 2px;
 	border-color: black;
-	background: cornflowerblue;
-	/* filter: alpha(opacity=6); */
+	background: rgb(0, 43, 122);
 	border-style: ridge;
-	/* padding: 15px 0; */
 	bottom: 1vh;
 	width: 80%;
 	height: 10%;
@@ -30,22 +25,13 @@ body {
 	align-items: center;
 }
 
-#ui>.textbox {
-	/* text-align:center; */
-	/* line-height: 90%;
-	font-size: 2vh; */
-	/* vertical-align: middle; */
-}
-
 #ui>* {
 	margin: 0 auto;
 	line-height: 90%;
 	font-size: 2vh;
-	/* padding: 1%; */
 	margin: auto;
 	height: 6vh;
 	width: 8vw;
-	/* margin-inline: 10px; */
 	font-weight: bold;
 	max-height: fit-content;
 }
@@ -60,17 +46,11 @@ div#banner {
 .card {
 	width: 10%;
 	max-height: 20vh;
-	display: inline-block;
-	/* padding: 0.1%; */
-	/* padding-top: 20px; */
-	/* margin: 0.1%; */
-	
+	display: inline-block;	
 }
 
 #playfield > div {
-	/* max-height: 80vh; */
 	margin: 1px;
-	/* padding: 0.2vh; */
 }
 
 #points {
@@ -102,8 +82,8 @@ div#banner {
 	color: rgb(22, 223, 22);
 }
 #losses {
-	color: rgb(148, 9, 9);
+	color: rgb(175, 0, 0);
 }
 #draws {
-	color: rgb(39, 5, 190)
+	color: rgb(189, 224, 63)
 }
