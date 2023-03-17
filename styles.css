@@ -6,30 +6,26 @@ body {
 	background-color: rgb(3, 121, 3);
 	font-family: Verdana, Geneva, Tahoma, sans-serif;
 	text-align: center;
+
 }
 
 #ui {
 	position:fixed;
+	padding: 0;
 	left: 50%;
 	transform: translateX(-50%);
 	border-width: 2px;
 	border-color: rgb(255, 255, 255);
-	background: rgb(0, 43, 122);
+	background: rgba(0, 43, 122, 50%);
 	border-style: ridge;
 	bottom: 1vh;
 	width: 80%;
-	height: 10%;
 	display: flex;
-}
-
-#ui>* {
-	line-height: 90%;
-	font-size: 2vh;
-	margin: auto;
-	height: 6vh;
-	width: 8vw;
-	font-weight: bold;
-	max-height: fit-content;
+	align-items: center;
+	justify-items:center;
+	flex-wrap: wrap;
+	flex-flow: row wrap-reverse;
+	
 }
 
 #message {
@@ -42,6 +38,12 @@ body {
 	border-width: 1px;
 	border-style: solid;
 	border-color: black;
+}
+
+button {
+	height: 60px;
+	width: 60px;
+	font-size: 1em;
 }
 
 .card {
@@ -58,6 +60,37 @@ body {
 
 #player-cards {
 	margin-top: 10vh;
+}
+
+
+#scores-container, #buttons-container {
+	display: flex;
+	align-items: center;
+	justify-items: center;
+	flex-direction:  column;
+	padding:1%;
+	margin:5px;
+	flex-wrap: wrap;
+	flex-flow: wrap;
+	gap: 30px;
+}
+
+#buttons-container {
+	flex: 2;
+}
+
+#buttons-container>* {
+	flex: 1 1;
+
+}
+
+#scores-container {
+	flex: 1 1;
+}
+
+ #scores-container>* {
+	flex: 1 1;
+	font-weight: bold;
 }
 
 #wins {
