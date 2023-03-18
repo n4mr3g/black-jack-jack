@@ -22,10 +22,7 @@ body {
 	width: 80%;
 	display: flex;
 	align-items: center;
-	justify-items:center;
-	flex-wrap: wrap;
-	flex-flow: row wrap-reverse;
-	
+	flex-wrap: wrap-reverse;	
 }
 
 #message {
@@ -65,14 +62,11 @@ button {
 
 #scores-container, #buttons-container {
 	display: flex;
-	align-items: center;
-	justify-items: center;
-	flex-direction:  column;
+	align-items:center;
 	padding:1%;
 	margin:5px;
 	flex-wrap: wrap;
-	flex-flow: wrap;
-	gap: 30px;
+	gap: 1%;
 }
 
 #buttons-container {
